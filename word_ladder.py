@@ -15,6 +15,7 @@ def find(word, words, seen, target, path):
   if len(list) == 0:
     return False
   list = sorted([(same(w, target), w) for w in list])
+  list = list[::-1]
   for (match, item) in list:
     if match >= len(target) - 1:
       if match == len(target) - 1:
@@ -27,9 +28,14 @@ def find(word, words, seen, target, path):
       return True
     path.pop()
 
-fname = input("Enter dictionary name: ")
-file = open(fname)
-lines = file.readlines()
+while True:
+  try:
+    fname = input("Enter dictionary name: ")
+    file = open(fname)
+    lines = file.readlines()
+    break
+  except FileNotFoundError as e:
+    print("Dictionary file by that name does not exist. Please try an existing dictionary name.")
 while True:
   start = input("Enter start word:")
   words = []
@@ -37,7 +43,16 @@ while True:
     word = line.rstrip()
     if len(word) == len(start):
       words.append(word)
+  if start not in words:
+    print("Start word not in dictionary, please try another start word.")
+    continue
   target = input("Enter target word:")
+  if len(start)!=len(target):
+    print("Length of start word and target word is different, please enter 2 words of same length.")
+    continue
+  if target not in words:
+    print("Target word not in dictionary, please try again.")
+    continue
   break
 
 count = 0
