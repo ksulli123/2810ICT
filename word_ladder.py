@@ -1,10 +1,6 @@
 import re
 import queue
 
-class Node:
-    def __init__(self, word, parent):
-        self.parent = parent
-        self.word = word
 
 # Function for returning how many letters item & target have in common
 def same(item, target):
@@ -28,30 +24,30 @@ def build(pattern, words, seen, list):
 def shortestFind(word, words, target, seen):
     length = len(target)
     wordQueue = queue.Queue()
-    wordQueue.put(Node(word, None),False)
+    wordQueue.put([word], False)
 
     # Depth First Search using a Queue
     while(not wordQueue.empty()):
-        node = wordQueue.get(False)
+        path = wordQueue.get(False)
+        word = path[-1]
         list = []
         # Generate all of the words that can be created by changing one letter in node.word
         for i in range(length):
-            list += build(node.word[:i] + "." + node.word[i + 1:], words, seen, list)
+            list += build(word[:i] + "." + word[i + 1:], words, seen, list)
 
         # Loop through each word in the list
         for w in list:
             seen[w] = True
             # If the word is one away from the target the path has been found
             if same(w, target) == length - 1:
-                path = [target, w, node.word]
-                # Backtrack through all of the parents to get the path then return it
-                while node.parent is not None:
-                    node = node.parent
-                    path.append(node.word)
-                return len(path) - 1, path[::-1]
+                path.append(w)
+                path.append(target)
+                return len(path) - 1, path
 
-            # If the word isn't one away from the target place it in the queue
-            wordQueue.put(Node(w, node), False)
+            # If the word isn't one away from the target place its path in the queue
+            new_path = path[::]
+            new_path.append(w)
+            wordQueue.put(new_path, False)
     return False
 
 def find(word, words, seen, target, path):
@@ -122,6 +118,9 @@ while True:
             else:
                 print("Empty file, try again")
                 continue
+        elif chr != "n":
+            print("Unknown input, try again")
+            continue
     except FileNotFoundError as e:
         print("A file by that name could not be found. Try again")
         continue
