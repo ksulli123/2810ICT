@@ -8,13 +8,21 @@ class Node:
 
 # Function for returning how many letters item & target have in common
 def same(item, target):
-    # Adds the letter c represents to a list if it is in the target as well, number of letters similar is returned
-    return len([c for (c, t) in zip(item, target) if c == t])
+    try:
+        # Adds the letter c represents to a list if it is in the target as well, number of letters similar is returned
+        return len([c for (c, t) in zip(item, target) if c == t])
+    except TypeError:
+        return False
 
 # Function for returning a list of words one letter different than a certain word
 def build(pattern, words, seen, list):
-    # Adds 'word' to a list if it is one letter different, not been seen & not in the list already, returns the new list
-    return [word for word in words if re.search(pattern, word) and word not in seen.keys() and word not in list]
+    if pattern == "" or words == [] or seen == {}:
+        return False
+    try:
+        # Adds 'word' to a list if it is one letter different, not been seen & not in the list already, returns the new list
+        return [word for word in words if re.search(pattern, word) and word not in seen.keys() and word not in list]
+    except TypeError:
+        return False
 
 # Function for getting the guaranteed shortest path
 def shortestFind(word, words, target, seen):
@@ -66,6 +74,7 @@ def find(word, words, seen, target, path):
       return True
     path.pop()
 
+
 # Statement for making sure a valid dictionary has been entered
 while True:
     try:
@@ -80,6 +89,7 @@ while True:
         break
     except FileNotFoundError as e:
         print("Dictionary file by that name does not exist. Please try an existing dictionary name.")
+
 
 seen = {}
 # Statement for making sure that valid start and target words have been input
