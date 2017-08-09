@@ -4,10 +4,10 @@ import queue
 
 # Function for returning how many letters item & target have in common
 def same(item, target):
-    try:
+    if len(item) == len(target):
         # Adds the letter c represents to a list if it is in the target as well, number of letters similar is returned
         return len([c for (c, t) in zip(item, target) if c == t])
-    except TypeError:
+    else:
         return False
 
 # Function for returning a list of words one letter different than a certain word
@@ -22,7 +22,7 @@ def build(pattern, words, seen, list):
 
 # Function for getting the guaranteed shortest path
 def shortestFind(word, words, target, seen):
-    length = len(target)
+    length = len(word)
     wordQueue = queue.Queue()
     wordQueue.put([word], False)
 
