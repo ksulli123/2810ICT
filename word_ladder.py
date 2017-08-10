@@ -71,8 +71,7 @@ def find(word, words, seen, target, path):
     path.pop()
 
 # Function that returns a list of words from a given dictionary file
-def getDict():
-    fname = input("Enter dictionary name: ")
+def getDict(fname):
     words = []
     try:
         file = open(fname)
@@ -86,16 +85,15 @@ def getDict():
     return words
 
 # Function that returns the start & target words if they are valid along with a list of words of the same length
-def getInputWords(wordList):
-    start = input("Enter start word: ").lower()
+def getInputWords(start, target, wordList):
     words = []
     for line in wordList:
         word = line.rstrip()
         if len(word) == len(start):
             words.append(word)
     if start not in words:
+        print("Word is not in the provided dictionary.")
         return False
-    target = input("Enter target word: ").lower()
     if len(start) != len(target):
         print("Length of start word and target word is different, please enter 2 words of same length.")
         return False
@@ -105,28 +103,22 @@ def getInputWords(wordList):
     elif target == start:
         print("The target and start words cannot be the same, please enter valid words.")
         return False
-    return start, target, words
+    return words
 
 # Function that returns a python dictionary, called 'seen', of words not to be used when searching
-def getSeenDict(start):
+def getSeenDict(fname, start):
     seen = {start: True}
     try:
-        chr = input("Eliminate some words? (y/n): ")
-        if chr == "y":
-            dname = input("Enter in a file name: ")
-            f = open(dname)
-            for line in f.readlines():
-                word = line.rstrip()
-                seen[word] = True
-            else:
-                print("Empty file, try again")
-                return False
-        elif chr != "n":
-            print("Unknown input, try again")
+        f = open(fname)
+        for line in f.readlines():
+            word = line.rstrip()
+            seen[word] = True
+        else:
+            print("Empty file, try again")
             return False
     except FileNotFoundError:
         print("A file by that name could not be found. Try again")
-        False
+        return False
     return seen
 
 # Function for determining what path function to use & then calling the function to get the path, returning the path
@@ -153,10 +145,29 @@ def choosePathFunc(start, target, seen, words):
         return False
 
 # Using the functions to get the paths
-wordList = getDict()
-start,target,words = getInputWords(wordList)
-seen = getSeenDict(start)
+'''
+fname = input("Enter dictionary name: ")
+wordList = getDict(fname)
+if not wordList:
+    exit(0)
+start = input("Enter start word: ").lower()
+target = input("Enter target word: ").lower()
+words = getInputWords(start, target, wordList)
+if not words:
+    exit(0)
+chr = input("Eliminate some words? (y/n): ")
+if chr == "y":
+    fname = input("Enter in a file name: ")
+    seen = getSeenDict(fname, start)
+    if not seen:
+        exit(0)
+elif chr == "n":
+    seen = {start: True}
+else:
+    print("Unknown Command")
+    exit(0)
 result = choosePathFunc(start, target, seen, words)
 if result:
     print("Steps:", result[0])
     print("Path:", result[1])
+'''
