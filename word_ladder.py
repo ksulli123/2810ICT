@@ -5,7 +5,7 @@ import queue
 # Function for returning how many letters item & target have in common
 def same(item, target):
     if len(item) == len(target):
-        # Adds the letter c represents to a list if it is in the target as well, number of letters similar is returned
+        # Adds chaacter 'c' to a list if it is the same letter as 'f', it then returns the number of common lettes
         return len([c for (c, t) in zip(item, target) if c == t])
     else:
         return False
@@ -15,7 +15,7 @@ def build(pattern, words, seen, list):
     if pattern == "" or words == [] or seen == {}:
         return False
     try:
-        # Adds 'word' to a list if it is one letter different, not been seen & not in the list already, returns the new list
+        # Adds 'word' to a list if it is one letter different, not been seen & not in the list already, returns the list
         return [word for word in words if re.search(pattern, word) and word not in seen.keys() and word not in list]
     except TypeError:
         return False
@@ -70,79 +70,93 @@ def find(word, words, seen, target, path):
       return True
     path.pop()
 
-
-# Statement for making sure a valid dictionary has been entered
-while True:
+# Function that returns a list of words from a given dictionary file
+def getDict():
+    fname = input("Enter dictionary name: ")
+    words = []
     try:
-        fname = input("Enter dictionary name: ")
         file = open(fname)
-        lines = file.readlines()
-
-        # Check to see if the dictionary is empty
-        if not lines:
-            print("The dictionary given is empty")
-            continue
-        break
-    except FileNotFoundError as e:
+        words = file.readlines()
+    except FileNotFoundError:
         print("Dictionary file by that name does not exist. Please try an existing dictionary name.")
+        return False
+    if not words:
+        print("The dictionary given is empty")
+        return False
+    return words
 
-
-seen = {}
-# Statement for making sure that valid start and target words have been input
-while True:
+# Function that returns the start & target words if they are valid along with a list of words of the same length
+def getInputWords(wordList):
     start = input("Enter start word: ").lower()
     words = []
-    for line in lines:
+    for line in wordList:
         word = line.rstrip()
         if len(word) == len(start):
             words.append(word)
     if start not in words:
-        print("Start word not in dictionary, please try another start word.")
-        continue
+        return False
     target = input("Enter target word: ").lower()
-    if len(start)!=len(target):
+    if len(start) != len(target):
         print("Length of start word and target word is different, please enter 2 words of same length.")
-        continue
-    if target not in words:
+        return False
+    elif target not in words:
         print("Target word not in dictionary, please try again.")
-        continue
+        return False
+    elif target == start:
+        print("The target and start words cannot be the same, please enter valid words.")
+        return False
+    return start, target, words
 
+# Function that returns a python dictionary, called 'seen', of words not to be used when searching
+def getSeenDict(start):
+    seen = {start: True}
     try:
         chr = input("Eliminate some words? (y/n): ")
         if chr == "y":
             dname = input("Enter in a file name: ")
             f = open(dname)
-            for lin in f.readlines():
-                wrd = lin.rstrip()
-                seen[wrd] = True
+            for line in f.readlines():
+                word = line.rstrip()
+                seen[word] = True
             else:
                 print("Empty file, try again")
-                continue
+                return False
         elif chr != "n":
             print("Unknown input, try again")
-            continue
-    except FileNotFoundError as e:
+            return False
+    except FileNotFoundError:
         print("A file by that name could not be found. Try again")
-        continue
+        False
+    return seen
+
+# Function for determining what path function to use & then calling the function to get the path, returning the path
+def choosePathFunc(start, target, seen, words):
     # Asking which function to use
     type = input("Want the shortest path? (y,n): ").lower()
     if type == "y":
-        seen[start] = True
         result = shortestFind(start, words, target, seen)
         if result:
-            print("Steps:", result[0])
-            print("Path:", result[1])
+            return result
         else:
             print("No Path Exists")
+            return False
     elif type == "n":
         path = [start]
-        seen[start] = True
         if find(start, words, seen, target, path):
             path.append(target)
-            print(len(path) - 1, path)
+            return len(path) - 1, path
         else:
-          print("No path found")
+            print("No path found")
+            return False
     else:
         print("Incorrect y/n value, please try again.")
-        continue
-    break
+        return False
+
+# Using the functions to get the paths
+wordList = getDict()
+start,target,words = getInputWords(wordList)
+seen = getSeenDict(start)
+result = choosePathFunc(start, target, seen, words)
+if result:
+    print("Steps:", result[0])
+    print("Path:", result[1])
