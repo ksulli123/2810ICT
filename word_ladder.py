@@ -4,21 +4,13 @@ import queue
 
 # Function for returning how many letters item & target have in common
 def same(item, target):
-    if len(item) == len(target):
-        # Adds chaacter 'c' to a list if it is the same letter as 'f', it then returns the number of common lettes
-        return len([c for (c, t) in zip(item, target) if c == t])
-    else:
-        return False
+    # Adds chaacter 'c' to a list if it is the same letter as 'f', it then returns the number of common lettes
+    return len([c for (c, t) in zip(item, target) if c == t])
 
 # Function for returning a list of words one letter different than a certain word
 def build(pattern, words, seen, list):
-    if pattern == "" or words == [] or seen == {}:
-        return False
-    try:
-        # Adds 'word' to a list if it is one letter different, not been seen & not in the list already, returns the list
-        return [word for word in words if re.search(pattern, word) and word not in seen.keys() and word not in list]
-    except TypeError:
-        return False
+    # Adds 'word' to a list if it is one letter different, not been seen & not in the list already, returns the list
+    return [word for word in words if re.search(pattern, word) and word not in seen.keys() and word not in list]
 
 # Function for getting the guaranteed shortest path
 def shortestFind(word, words, target, seen):
@@ -113,11 +105,11 @@ def getSeenDict(fname, start):
         for line in f.readlines():
             word = line.rstrip()
             seen[word] = True
-        else:
-            print("Empty file, try again")
-            return False
     except FileNotFoundError:
         print("A file by that name could not be found. Try again")
+        return False
+    if len(seen.keys()) == 1:
+        print("Empty file, try again")
         return False
     return seen
 
