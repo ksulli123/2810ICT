@@ -42,25 +42,42 @@ def shortestFind(word, words, target, seen):
             wordQueue.put(new_path, False)
     return False
 
-def find(word, words, seen, target, path):
-  list = []
-  for i in range(len(word)):
-    list += build(word[:i] + "." + word[i + 1:], words, seen, list)
-  if len(list) == 0:
+# Iterative deepening search to find the words
+def IDDFS(word, path, min, max):
+    # Looping from minimum to maximum depth stepping by two
+    for limit in range(min, max + 2, 2):
+        s = dict(seen)
+        if find(word, words, s, target, path, limit):
+            return True
     return False
-  list = sorted([(same(w, target), w) for w in list])
-  list = list[::-1]
-  for (match, item) in list:
-    if match >= len(target) - 1:
-      if match == len(target) - 1:
+
+# Recursive depth limited search
+def find(word, words, seen, target, path, depth):
+    # If the path has reached the maximum depth try a different path
+    if len(path) == depth:
+        return False
+    list = []
+    # Looping through each possible character change and getting valid words
+    for i in range(len(word)):
+        list += build(word[:i] + "." + word[i + 1:], words, seen, list)
+    # If there are no words in the list try a different path
+    if len(list) == 0:
+        return False
+    # Sort the words by how similar they are to the target
+    list = sorted([(same(w, target), w) for w in list])
+    list = list[::-1]
+
+    for (match, item) in list:
+        if match >= len(target) - 1:
+            if match == len(target) - 1:
+              path.append(item)
+            return True
+        seen[item] = True
+    for (match, item) in list:
         path.append(item)
-      return True
-    seen[item] = True
-  for (match, item) in list:
-    path.append(item)
-    if find(item, words, seen, target, path):
-      return True
-    path.pop()
+        if find(item, words, seen, target, path, depth):
+            return True
+        path.pop()
 
 # Function that returns a list of words from a given dictionary file
 def getDict(fname):
@@ -115,6 +132,7 @@ def getSeenDict(fname, start):
 
 # Function for determining what path function to use & then calling the function to get the path, returning the path
 def choosePathFunc(start, target, seen, words):
+    length = len(start)
     # Asking which function to use
     type = input("Want the shortest path? (y,n): ").lower()
     if type == "y":
@@ -126,7 +144,7 @@ def choosePathFunc(start, target, seen, words):
             return False
     elif type == "n":
         path = [start]
-        if find(start, words, seen, target, path):
+        if IDDFS(start, path, length - same(start, target), length + (length - same(start, target))):
             path.append(target)
             return len(path) - 1, path
         else:
@@ -136,8 +154,8 @@ def choosePathFunc(start, target, seen, words):
         print("Incorrect y/n value, please try again.")
         return False
 
+
 # Using the functions to get the paths
-'''
 fname = input("Enter dictionary name: ")
 wordList = getDict(fname)
 if not wordList:
@@ -162,4 +180,3 @@ result = choosePathFunc(start, target, seen, words)
 if result:
     print("Steps:", result[0])
     print("Path:", result[1])
-'''
