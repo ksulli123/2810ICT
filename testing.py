@@ -45,7 +45,9 @@ class TestLaddergram(unittest.TestCase):
 
     def test_sameValid2(self):
         self.assertEqual(word_ladder.same("goal", "load"), 2)
-    # The length of the start & target being equal has already been checked by previous functions
+
+    def test_sameInvalid1(self):
+        self.assertFalse(word_ladder.same("hide", "the"))
 
     def test_buildValid1(self):
         words = ['aide', 'bide', 'down', 'hide', 'loan', 'side', 'seek']
@@ -58,8 +60,14 @@ class TestLaddergram(unittest.TestCase):
         seen = {"load": True}
         list = ['coal']
         self.assertEqual(word_ladder.build(".oal", words, seen, list), ['goal', 'foal'])
-    # Previous functions make sure that no invalid inputs are given to the build function
 
+    def test_buildInvalid1(self):
+        words = ['aide', 'bide', 'down', 'hide', 'loan', 'side', 'seek']
+        seen = {"the": True}
+        list = []
+        self.assertFalse(word_ladder.build(".he", words, seen, list))
+
+# Previous functions make sure that the functions parameters are all valid for the following functions
     def test_shortestFindValid1(self):
         word = "lead"
         words = ['coal', 'down', 'goad', 'sole', 'foal', 'load', 'loan', 'moan', 'seek']
@@ -73,7 +81,53 @@ class TestLaddergram(unittest.TestCase):
         target = "gold"
         seen = {"lead": True}
         self.assertFalse(word_ladder.shortestFind(word, words, target, seen))
-    # Previous functions make sure that the functions parameters are all valid
+
+    def test_findValid1(self):
+        word = "lead"
+        words = ['coal', 'down', 'goad', 'sole', 'foal', 'load', 'loan', 'moan', 'seek']
+        target = "gold"
+        seen = {"lead": True}
+        path = [word]
+        depth = 4
+        self.assertTrue(word_ladder.find(word, words, seen, target, path, depth))
+
+    def test_findValid2(self):
+        word = "lead"
+        words = ['coal', 'down', 'goad', 'sole', 'foal', 'load', 'loan', 'moan', 'seek']
+        target = "gold"
+        seen = {"lead": True}
+        path = [word]
+        depth = 2
+        self.assertFalse(word_ladder.find(word, words, seen, target, path, depth))
+
+    def test_findValid3(self):
+        word = "hell"
+        words = ['coal', 'down', 'goad', 'sole', 'foal', 'load', 'loan', 'moan', 'seek']
+        target = "gold"
+        seen = {"hell": True}
+        path = [word]
+        depth = 4
+        self.assertFalse(word_ladder.find(word, words, seen, target, path, depth))
+
+    def test_IDDFSValid1(self):
+        start = "lead"
+        target = "gold"
+        words = ['coal', 'down', 'goad', 'sole', 'foal', 'load', 'loan', 'moan', 'seek']
+        seen = {"lead": True}
+        path = [start]
+        min = len(start) - word_ladder.same(start, target)
+        max = len(start) + min
+        self.assertTrue(word_ladder.IDDFS(start, target, seen, words, path, min, max))
+
+    def test_IDDFSValid2(self):
+        start = "hell"
+        target = "gold"
+        words = ['coal', 'down', 'goad', 'sole', 'foal', 'load', 'loan', 'moan', 'seek']
+        seen = {"hell": True}
+        path = [start]
+        min = len(start) - word_ladder.same(start, target)
+        max = len(start) + min
+        self.assertFalse(word_ladder.IDDFS(start, target, seen, words, path, min, max))
 
 if __name__ == "__main__":
     unittest.main()
