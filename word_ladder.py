@@ -66,13 +66,14 @@ def find(word, words, seen, target, path, depth):
     # Sort the words by how similar they are to the target
     list = sorted([(same(w, target), w) for w in list])
     list = list[::-1]
-
+    # If the a full path from the starting word to the target has been found return true
     for (match, item) in list:
         if match >= len(target) - 1:
             if match == len(target) - 1:
               path.append(item)
             return True
         seen[item] = True
+    # Call the recursive function again, if it has found the return true
     for (match, item) in list:
         path.append(item)
         if find(item, words, seen, target, path, depth):
