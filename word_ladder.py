@@ -4,7 +4,7 @@ import queue
 
 # Function for returning how many letters item & target have in common
 def same(item, target):
-    # Adds chaacter 'c' to a list if it is the same letter as 'f', it then returns the number of common lettes
+    # Adds character 'c' to a list if it is the same letter as 'f', it then returns the number of common letters
     return len([c for (c, t) in zip(item, target) if c == t])
 
 # Function for returning a list of words one letter different than a certain word
