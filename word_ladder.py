@@ -4,13 +4,24 @@ import queue
 
 # Function for returning how many letters item & target have in common
 def same(item, target):
+<<<<<<< HEAD
     # Adds character 'c' to a list if it is the same letter as 'f', it then returns the number of common letters
+=======
+    if len(item) != len(target):
+        print("words not same length")
+        return False
+    # Adds character 'c' to a list if it is the same letter as 'f', it then returns the number of common lettes
+>>>>>>> origin/master
     return len([c for (c, t) in zip(item, target) if c == t])
 
 # Function for returning a list of words one letter different than a certain word
 def build(pattern, words, seen, list):
+    if len(pattern) != len(words[0]):
+        print("The pattern is invalid for the words")
+        return False
     # Adds 'word' to a list if it is one letter different, not been seen & not in the list already, returns the list
-    return [word for word in words if re.search(pattern, word) and word not in seen.keys() and word not in list]
+    return [word for word in words if re.search(pattern, word) and
+            word not in seen.keys() and word not in list]
 
 # Function for getting the guaranteed shortest path
 def shortestFind(word, words, target, seen):
@@ -43,11 +54,11 @@ def shortestFind(word, words, target, seen):
     return False
 
 # Iterative deepening search to find the words
-def IDDFS(word, path, min, max):
+def IDDFS(start, target, seen, words, path, min, max):
     # Looping from minimum to maximum depth stepping by two
     for limit in range(min, max + 2, 2):
         s = dict(seen)
-        if find(word, words, s, target, path, limit):
+        if find(start, words, s, target, path, limit):
             return True
     return False
 
@@ -67,14 +78,14 @@ def find(word, words, seen, target, path, depth):
     list = sorted([(same(w, target), w) for w in list])
     list = list[::-1]
     # If the a full path from the starting word to the target has been found return true
-    for (match, item) in list:
+    for match, item in list:
         if match >= len(target) - 1:
             if match == len(target) - 1:
               path.append(item)
             return True
         seen[item] = True
     # Call the recursive function again, if it has found the return true
-    for (match, item) in list:
+    for match, item in list:
         path.append(item)
         if find(item, words, seen, target, path, depth):
             return True
@@ -107,10 +118,10 @@ def getInputWords(start, target, wordList):
     if len(start) != len(target):
         print("Length of start word and target word is different, please enter 2 words of same length.")
         return False
-    elif target not in words:
+    if target not in words:
         print("Target word not in dictionary, please try again.")
         return False
-    elif target == start:
+    if target == start:
         print("The target and start words cannot be the same, please enter valid words.")
         return False
     return words
@@ -145,7 +156,7 @@ def choosePathFunc(start, target, seen, words):
             return False
     elif type == "n":
         path = [start]
-        if IDDFS(start, path, length - same(start, target), length + (length - same(start, target))):
+        if IDDFS(start, target, seen, words, path, length - same(start, target), length + (length - same(start, target))):
             path.append(target)
             return len(path) - 1, path
         else:
